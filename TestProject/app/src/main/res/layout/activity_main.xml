@@ -8,8 +8,8 @@
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <sun.bob.knobview.KnobView
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:id="@+id/id_knob_view"/>
 

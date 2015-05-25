@@ -1,6 +1,8 @@
 package sun.bob.knobview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,6 +22,10 @@ public class KnobView extends View {
     private Paint paintOut;
     private OnTickListener onTickListener;
     private float startDeg = Float.NaN;
+    private float rotateDeg = 0;
+
+    private Bitmap bmp;
+    private Paint bmpPaint;
 
     public KnobView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -27,11 +33,13 @@ public class KnobView extends View {
         paintOut = new Paint();
         paintOut.setColor(Color.GRAY);
         paintOut.setAntiAlias(true);
+        bmpPaint = new Paint();
+        bmp = BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_launcher);
     }
 
     @Override
     protected void onMeasure(int measureWidthSpec,int measureHeightSpec){
-        super.onMeasure(measureWidthSpec,measureHeightSpec);
+        super.onMeasure(measureWidthSpec, measureHeightSpec);
         int measuredWidth = measureWidth(measureWidthSpec);
         int measuredHeight = measureHeight(measureHeightSpec);
         this.setMeasuredDimension(measuredWidth, measuredHeight);
@@ -40,9 +48,22 @@ public class KnobView extends View {
         center.y = measuredHeight/2;
     }
 
+    /**
+     * Set the knob's background.
+     * If background is not specified, it will use the launcher icon as background.
+     * @param bmp
+     */
+    public void setBackground(Bitmap bmp){
+        if (bmp != null)
+            this.bmp = bmp;
+    }
+
     @Override
     public void onDraw(Canvas canvas){
         canvas.drawCircle(center.x,center.y,radiusOut,paintOut);
+        canvas.rotate(rotateDeg,center.x,center.y);
+
+        canvas.drawBitmap(bmp,center.x - bmp.getWidth()/2,center.y - bmp.getHeight()/2,bmpPaint);
     }
 
     private int measureWidth(int measureSpec) {
@@ -101,12 +122,16 @@ public class KnobView extends View {
                             startDeg = currentDeg;
                             if(onTickListener !=null)
                                 onTickListener.onNextTick();
+                            rotateDeg += 72f;
+                            this.invalidate();
                         }
                         if(ticks == -1){
                             Log.e("Ticks","Previous");
                             startDeg = currentDeg;
                             if(onTickListener !=null)
                                 onTickListener.onPreviousTick();
+                            rotateDeg -= 72f;
+                            this.invalidate();
                         }
                     }
                     startDeg = currentDeg;
